@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Site Semântico Avançado</title>
+  <meta name="description" content="Exemplo avançado com HTML semântico, CSS responsivo e JavaScript para interatividade">
+  <link rel="icon" href="data:,">
+  <style>
+    :root{
+      --bg:#0f1724;
+      --card:#0b1220;
+      --muted:#9aa4b2;
+      --accent:#47b4ff;
+      --success:#4ade80;
+      --danger:#ff6b6b;
+      --glass:rgba(255,255,255,0.04);
+      --radius:14px;
+      --container:1200px;
+      --gap:1rem;
+      color-scheme:dark;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#06101a);color:#e6eef8;-webkit-font-smoothing:antialiased;line-height:1.5}
+    .container{max-width:var(--container);margin:0 auto;padding:1rem}
+    header[role=banner]{backdrop-filter:blur(6px);background:linear-gradient(90deg,rgba(7,20,30,0.6),rgba(2,8,12,0.6));border-bottom:1px solid rgba(255,255,255,0.03)}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.8rem 0}
+    .brand{display:flex;align-items:center;gap:.75rem}
+    .brand h1{font-size:1.1rem;margin:0}
+    nav[aria-label="principal"] ul{list-style:none;margin:0;padding:0;display:flex;gap:.5rem;align-items:center}
+    nav a{color:inherit;text-decoration:none;padding:.45rem .6rem;border-radius:10px;font-weight:600}
+    nav a:focus,nav a:hover{background:rgba(255,255,255,0.03);outline:none}
+    .actions{display:flex;gap:.5rem;align-items:center}
+    .btn{background:var(--glass);border:1px solid rgba(255,255,255,0.03);padding:.45rem .6rem;border-radius:10px;color:var(--muted);cursor:pointer}
+    .btn.primary{background:linear-gradient(90deg,var(--accent),#8be6ff);color:#021124;border:none}
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:1rem;align-items:start;padding:2rem 0}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:1rem;border-radius:var(--radius);box-shadow:0 8px 30px rgba(2,6,10,0.6);border:1px solid rgba(255,255,255,0.02)}
+    .hero h2{margin:0 0 .5rem 0;font-size:1.6rem}
+    .meta{color:var(--muted);font-size:.95rem;margin-bottom:.75rem}
+    .searchbar{display:flex;gap:.5rem}
+    input[type=search]{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:.6rem .75rem;border-radius:10px;color:inherit;min-width:220px}
+    .grid{display:grid;grid-template-columns:2fr 1fr;gap:var(--gap)}
+    main{padding:1.25rem 0}
+    article.post{display:grid;grid-template-columns:1fr;gap:.75rem}
+    article.post header h3{margin:0}
+    .excerpt{color:var(--muted)}
+    .posts{display:grid;gap:1rem}
+    .post-meta{display:flex;gap:.55rem;align-items:center;color:var(--muted);font-size:.9rem}
+    .tags{display:flex;gap:.4rem;flex-wrap:wrap}
+    .tag{background:rgba(71,180,255,0.08);padding:.2rem .45rem;border-radius:8px;font-size:.8rem;color:var(--accent);border:1px solid rgba(71,180,255,0.06)}
+    aside.sidebar{display:flex;flex-direction:column;gap:1rem}
+    .card.small{padding:.75rem}
+    .toc ul{list-style:none;padding:0;margin:0;display:grid;gap:.35rem}
+    .toc a{display:block;padding:.4rem .5rem;border-radius:8px;text-decoration:none;color:var(--muted)}
+    .toc a:focus,.toc a:hover{background:rgba(255,255,255,0.02);color:var(--accent)}
+    footer{padding:2rem 0;border-top:1px solid rgba(255,255,255,0.02);color:var(--muted)}
+    .footer-grid{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+    .preview{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+    pre{background:#04111a;padding:.75rem;border-radius:8px;overflow:auto}
+    .kbd{background:rgba(255,255,255,0.03);padding:.15rem .4rem;border-radius:6px;font-size:.85rem}
+    .mobile-menu{display:none}
+    .post-list{display:grid;gap:.6rem}
+    .post-card{display:flex;gap:.75rem;align-items:flex-start}
+    .post-card img{width:110px;height:70px;object-fit:cover;border-radius:8px}
+    .badge{padding:.25rem .45rem;border-radius:999px;background:rgba(74,222,128,0.12);color:var(--success);font-weight:700;font-size:.8rem}
+    .controls{display:flex;gap:.5rem;align-items:center}
+    .hero-cta{display:flex;gap:.5rem;margin-top:1rem}
+    .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:1rem;visibility:hidden;opacity:0;transition:all .18s ease}
+    .modal.open{visibility:visible;opacity:1}
+    .modal .dialog{max-width:720px;width:100%;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:1rem;border-radius:12px}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+    @media (max-width:1000px){.hero{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.hero h2{font-size:1.4rem}}
+    @media (max-width:720px){nav[aria-label="principal"] ul{display:none}.mobile-menu{display:block}.brand h1{font-size:1rem}.hero{padding:1rem 0}}
+  </style>
+</head>
+<body>
+  <header role="banner">
+    <div class="container topbar">
+      <div class="brand">
+        <svg width="40" height="40" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect width="24" height="24" rx="6" fill="url(#g)"></rect></svg>
+        <h1>Portal Semântico</h1>
+      </div>
+      <nav aria-label="principal">
+        <ul>
+          <li><a href="#home">Início</a></li>
+          <li><a href="#artigos">Artigos</a></li>
+          <li><a href="#recursos">Recursos</a></li>
+          <li><a href="#contato">Contato</a></li>
+        </ul>
+      </nav>
+      <div class="actions">
+        <button class="btn" id="themeToggle" aria-pressed="false">Tema</button>
+        <button class="btn primary" id="openSubscribe">Assinar</button>
+        <button class="btn mobile-menu" id="openMenu" aria-controls="mobileNav" aria-expanded="false">Menu</button>
+      </div>
+    </div>
+    <nav id="mobileNav" class="container" aria-hidden="true">
+      <div style="padding:0.5rem 0;display:none" id="mobileNavInner"></div>
+    </nav>
+  </header>
+  <main id="home" role="main">
+    <div class="container">
+      <section class="hero">
+        <div class="card">
+          <h2>Aprenda HTML semântico com exemplos reais</h2>
+          <p class="meta">Estrutura, acessibilidade, SEO e melhores práticas aplicadas</p>
+          <p class="excerpt">Este portal demonstra componentes semânticos, interativos e responsivos. Experimente buscar, filtrar artigos e abrir o modal de contato.</p>
+          <div class="hero-cta">
+            <div class="searchbar" role="search">
+              <label for="search" class="visually-hidden">Pesquisar</label>
+              <input id="search" type="search" placeholder="Pesquisar artigos, e.g. acessibilidade" aria-label="Pesquisar artigos">
+              <button class="btn" id="clearSearch">Limpar</button>
+            </div>
+            <div class="controls">
+              <label for="category">Categoria</label>
+              <select id="category">
+                <option value="all">Todas</option>
+                <option value="html">HTML</option>
+                <option value="accessibility">Acessibilidade</option>
+                <option value="seo">SEO</option>
+                <option value="css">CSS</option>
+              </select>
+            </div>
+          </div>
+          <div style="margin-top:1rem;display:flex;gap:.5rem;flex-wrap:wrap">
+            <button class="btn" id="openContact">Contato</button>
+            <button class="btn" id="openNewsletter">Newsletter</button>
+          </div>
+        </div>
+        <aside class="card" aria-labelledby="summary-title">
+          <h3 id="summary-title">Resumo</h3>
+          <p class="meta">Tópicos cobertos</p>
+          <div class="tags" role="list">
+            <span class="tag" role="listitem">Semântica</span>
+            <span class="tag" role="listitem">Acessibilidade</span>
+            <span class="tag" role="listitem">SEO</span>
+            <span class="tag" role="listitem">Formulários</span>
+            <span class="tag" role="listitem">JavaScript</span>
+          </div>
+          <div style="margin-top:1rem">
+            <div class="post-meta">
+              <span class="badge">Novidade</span>
+              <span class="meta">Atualizado em <time datetime="2025-09-16">16 set 2025</time></span>
+            </div>
+          </div>
+        </aside>
+      </section>
+      <div class="grid">
+        <section id="artigos" aria-labelledby="artigos-title">
+          <h2 id="artigos-title">Artigos recentes</h2>
+          <div class="card">
+            <div class="post-filter" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+              <div class="meta" id="resultsCount"></div>
+              <div class="controls">
+                <label for="sort">Ordenar</label>
+                <select id="sort">
+                  <option value="new">Mais recentes</option>
+                  <option value="old">Mais antigos</option>
+                </select>
+              </div>
+            </div>
+            <div class="posts" id="posts"></div>
+          </div>
+        </section>
+        <aside class="sidebar" aria-labelledby="sidebar-title">
+          <div class="card small toc" role="navigation" aria-labelledby="sidebar-title">
+            <h3 id="sidebar-title">Sumário Rápido</h3>
+            <ul>
+              <li><a href="#home">Início</a></li>
+              <li><a href="#artigos">Artigos</a></li>
+              <li><a href="#recursos">Recursos</a></li>
+              <li><a href="#contato">Contato</a></li>
+            </ul>
+          </div>
+          <div class="card small">
+            <h4>Últimos comentários</h4>
+            <div class="post-list" id="comments">
+              <div class="post-card">
+                <img src="https://images.unsplash.com/photo-1524253482453-3fed8d2fe12b?q=80&w=600&auto=format&fit=crop&s=placeholder" alt="avatar">
+                <div>
+                  <div style="font-weight:700">Mariana</div>
+                  <div class="excerpt">Ótimo conteúdo sobre acessibilidade.</div>
+                </div>
+              </div>
+              <div class="post-card">
+                <img src="https://images.unsplash.com/photo-1545996124-1f95d6b6f6b3?q=80&w=600&auto=format&fit=crop&s=placeholder" alt="avatar">
+                <div>
+                  <div style="font-weight:700">Rafael</div>
+                  <div class="excerpt">Ajudou muito na organização do meu site.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card small">
+            <h4>Recursos</h4>
+            <ul>
+              <li><a href="#">MDN Web Docs</a></li>
+              <li><a href="#">WAI-ARIA</a></li>
+              <li><a href="#">Google Lighthouse</a></li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+      <section id="recursos" aria-labelledby="recursos-title" style="margin-top:1rem">
+        <h2 id="recursos-title">Recursos e ferramentas</h2>
+        <div class="card grid-2">
+          <div>
+            <h4>Checklist de Acessibilidade</h4>
+            <ul>
+              <li>Uso correto de headings</li>
+              <li>Labels em formulários</li>
+              <li>Contraste adequado</li>
+              <li>Navegabilidade por teclado</li>
+            </ul>
+          </div>
+          <div>
+            <h4>Ferramentas</h4>
+            <ul>
+              <li>Contrast Checker</li>
+              <li>Screen Reader</li>
+              <li>Audit com Lighthouse</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+      <section id="contato" aria-labelledby="contato-title" style="margin-top:1rem">
+        <h2 id="contato-title">Fale conosco</h2>
+        <div class="card">
+          <form id="contactForm" novalidate>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">
+              <label for="nome">Nome</label>
+              <input id="nome" name="nome" type="text" required>
+              <label for="emailForm">Email</label>
+              <input id="emailForm" name="email" type="email" required>
+            </div>
+            <label for="mensagem">Mensagem</label>
+            <textarea id="mensagem" name="mensagem" rows="4" required></textarea>
+            <div style="display:flex;gap:.5rem;margin-top:.5rem;align-items:center">
+              <button class="btn primary" type="submit">Enviar mensagem</button>
+              <span id="formStatus" aria-live="polite"></span>
+            </div>
+          </form>
+        </div>
+      </section>
+    </div>
+  </main>
+  <footer role="contentinfo">
+    <div class="container footer-grid">
+      <div>
+        <strong>Portal Semântico</strong>
+        <div class="meta">© 2025</div>
+      </div>
+      <nav aria-label="rodape">
+        <ul style="display:flex;gap:1rem;list-style:none;padding:0;margin:0">
+          <li><a href="#">Privacidade</a></li>
+          <li><a href="#">Termos</a></li>
+        </ul>
+      </nav>
+    </div>
+  </footer>
+  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="dialog card" role="document">
+      <h3 id="modalTitle">Contato rápido</h3>
+      <form id="modalForm">
+        <label for="mnome">Nome</label>
+        <input id="mnome" name="mnome" required>
+        <label for="memail">Email</label>
+        <input id="memail" name="memail" type="email" required>
+        <label for="mmsg">Mensagem</label>
+        <textarea id="mmsg" name="mmsg" rows="4" required></textarea>
+        <div style="display:flex;gap:.5rem;margin-top:.75rem;justify-content:flex-end">
+          <button class="btn" type="button" id="closeModal">Fechar</button>
+          <button class="btn primary" type="submit">Enviar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script>
+    const postsData=[
+      {id:1,title:'HTML semântico: por onde começar',category:'html',excerpt:'Guia prático para estruturar seu conteúdo com semantic tags',date:'2025-09-10'},
+      {id:2,title:'Acessibilidade: boas práticas',category:'accessibility',excerpt:'Como tornar seu site navegável para todos',date:'2025-08-01'},
+      {id:3,title:'SEO técnico para desenvolvedores',category:'seo',excerpt:'Meta tags, headings e performance',date:'2025-07-20'},
+      {id:4,title:'Layouts modernos com CSS Grid',category:'css',excerpt:'Criando layouts responsivos com poucas linhas',date:'2025-06-15'},
+      {id:5,title:'Formulários acessíveis',category:'accessibility',excerpt:'Labels, validação e mensagens claras',date:'2025-05-05'}
+    ];
+    const postsEl=document.getElementById('posts');
+    const resultsCount=document.getElementById('resultsCount');
+    const search=document.getElementById('search');
+    const category=document.getElementById('category');
+    const sort=document.getElementById('sort');
+    const clearSearch=document.getElementById('clearSearch');
+    const openContact=document.getElementById('openContact');
+    const openNewsletter=document.getElementById('openNewsletter');
+    const modal=document.getElementById('modal');
+    const modalForm=document.getElementById('modalForm');
+    const openSubscribe=document.getElementById('openSubscribe');
+    const themeToggle=document.getElementById('themeToggle');
+    const contactForm=document.getElementById('contactForm');
+    function renderPosts(){
+      const q=search.value.trim().toLowerCase();
+      const cat=category.value;
+      let list=postsData.filter(p=>{
+        const matchQ=!q||p.title.toLowerCase().includes(q)||p.excerpt.toLowerCase().includes(q);
+        const matchC=cat==='all'||p.category===cat;
+        return matchQ&&matchC;
+      });
+      if(sort.value==='new') list=list.sort((a,b)=>new Date(b.date)-new Date(a.date)); else list=list.sort((a,b)=>new Date(a.date)-new Date(b.date));
+      resultsCount.textContent=`${list.length} resultado(s)`;
+      postsEl.innerHTML='';
+      list.forEach(p=>{
+        const el=document.createElement('article');
+        el.className='post';
+        el.innerHTML=`<header><h3>${p.title}</h3><div class="post-meta"><time datetime="${p.date}">${p.date}</time><span class="badge">${p.category.toUpperCase()}</span></div></header><p class="excerpt">${p.excerpt}</p><div style=\"display:flex;gap:.5rem;justify-content:space-between;align-items:center\"><a class=\"btn\" href=\"#\" data-id=\"${p.id}\">Ler</a><div class=\"tags\"><span class=\"tag\">${p.category}</span></div></div>`;
+        postsEl.appendChild(el);
+      });
+    }
+    renderPosts();
+    search.addEventListener('input',renderPosts);
+    category.addEventListener('change',renderPosts);
+    sort.addEventListener('change',renderPosts);
+    clearSearch.addEventListener('click',()=>{search.value='';renderPosts();search.focus()});
+    document.getElementById('openMenu').addEventListener('click',e=>{
+      const btn=e.currentTarget;
+      const nav=document.getElementById('mobileNav');
+      const inner=document.getElementById('mobileNavInner');
+      if(nav.getAttribute('aria-hidden')==='true'){
+        inner.style.display='block';
+        inner.innerHTML=document.querySelector('nav[aria-label="principal"] ul').outerHTML;
+        nav.setAttribute('aria-hidden','false');
+        btn.setAttribute('aria-expanded','true');
+      } else {
+        inner.style.display='none';
+        nav.setAttribute('aria-hidden','true');
+        btn.setAttribute('aria-expanded','false');
+      }
+    });
+    openContact.addEventListener('click',()=>{modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.getElementById('mnome').focus()});
+    document.getElementById('closeModal').addEventListener('click',()=>{modal.classList.remove('open');modal.setAttribute('aria-hidden','true')});
+    modalForm.addEventListener('submit',e=>{e.preventDefault();const form=new FormData(modalForm);document.getElementById('modalTitle').textContent='Mensagem enviada. Obrigado!';modalForm.reset();setTimeout(()=>{modal.classList.remove('open');modal.setAttribute('aria-hidden','true');document.getElementById('modalTitle').textContent='Contato rápido'},1200)});
+    openSubscribe.addEventListener('click',()=>{const email=prompt('Digite seu email para assinar:');if(email&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))alert('Obrigado pela inscrição!');else if(email)alert('Email inválido')});
+    openNewsletter.addEventListener('click',()=>{openSubscribe.click()});
+    themeToggle.addEventListener('click',()=>{const root=document.documentElement;const cur=root.getAttribute('data-theme');if(cur==='light'){root.removeAttribute('data-theme');themeToggle.setAttribute('aria-pressed','false')}else{root.setAttribute('data-theme','light');themeToggle.setAttribute('aria-pressed','true')}});
+    contactForm.addEventListener('submit',e=>{e.preventDefault();const status=document.getElementById('formStatus');const data=new FormData(contactForm);const name=data.get('nome');const email=data.get('email');const msg=data.get('mensagem');if(!name||!email||!msg){status.textContent='Preencha todos os campos.';status.style.color=getComputedStyle(document.documentElement).getPropertyValue('--danger')||'#ff6b6b';return}status.textContent='Enviando...';setTimeout(()=>{status.textContent='Mensagem enviada com sucesso!';status.style.color=getComputedStyle(document.documentElement).getPropertyValue('--success')||'#4ade80';contactForm.reset()},800)});
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(modal.classList.contains('open')){modal.classList.remove('open');modal.setAttribute('aria-hidden','true')}}});
+    const prefersLight=window.matchMedia && window.matchMedia('(prefers-color-scheme:light)').matches;if(prefersLight){document.documentElement.setAttribute('data-theme','light');themeToggle.setAttribute('aria-pressed','true')}
+  </script>
+</body>
+</html>
